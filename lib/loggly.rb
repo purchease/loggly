@@ -7,7 +7,7 @@ require 'restclient'
 
 class LogglyResque
 
-  @queue = :loggly
+  @queue = :asynctasks
 
   def self.perform(klass,message, time=nil)
     klass.camelize.constantize.send(:send_to_loggly, message, time)
