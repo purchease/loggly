@@ -7,9 +7,8 @@ require 'restclient'
 
 class LogglyResque
 
-  @queue = :asynctasks
-
-  def self.perform(klass,message, time=nil)
+  def self.perform(klass,message, time=nil, queue_name=:loggly)
+    @queue= queue_name
     klass.camelize.constantize.send(:send_to_loggly, message, time)
   end
 end
@@ -70,10 +69,10 @@ class Loggly
   #
   # This method behaves the same as record, but uses resque to send the message.
   #
-  def self.async_record(message, time=nil)
+  def self.async_record(message, time=nil, queue_name=:loggly)
 
     begin
-      Resque.enqueue(LogglyResque, self.name, message, time)
+      Resque.enqueue(LogglyResque, self.name, message, time, queue_name)
     rescue => e
       puts e
       puts "There was an error cueing loggly"
